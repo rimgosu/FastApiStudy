@@ -1,11 +1,13 @@
-from typing import Optional
-from fastapi import FastAPI, Form, File, UploadFile
-import os
-app = FastAPI()
+from pydantic import BaseModel
+from database import engineconn
+from models import Chatbot
+from fastapi import FastAPI
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile = File(...)):
-    content = await file.read()
-    with open(os.path.join("./", file.filename), "wb") as fp:
-        fp.write(content)    
-    return {"filename": file.filename}
+app = FastAPI()
+engine = engineconn()
+session = engine.sessionmaker()
+
+@app.get("/chatbot")
+async def first_get():
+    example = session.query(Chatbot).all()
+    return example
